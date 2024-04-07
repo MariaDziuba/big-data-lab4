@@ -22,8 +22,8 @@ class Trainer:
         X_train, y_train = preprocessor.load_and_preprocess_data(path_to_train_data, isTest=False)
         train_features = vectorizer.fit_transform(X_train)
         clf = model.fit(train_features, y_train)
-        #save_ckpt(clf, path_to_model_ckpt)
-        #save_ckpt(vectorizer, path_to_vectorizer_ckpt)
+        save_ckpt(clf, path_to_model_ckpt)
+        save_ckpt(vectorizer, path_to_vectorizer_ckpt)
         
 
 
