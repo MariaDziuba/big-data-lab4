@@ -19,7 +19,7 @@ class Predictor:
         vectorizer = load_ckpt(path_to_vectorizer_ckpt)
         test_features = vectorizer.transform(X_test)
         predicted = clf.predict(test_features)
-        submission = pd.DataFrame({'ArticleId': preprocessor.get_article_ids, 'Category': predicted.tolist()}) 
+        submission = pd.DataFrame({'ArticleId': preprocessor.get_article_ids(), 'Category': predicted.tolist()}) 
         submission.to_csv(path_to_submission, index=False)
 
 if __name__ == "__main__":
@@ -30,6 +30,6 @@ if __name__ == "__main__":
     path_to_vectorizer_ckpt = config['vectorizer']['path_to_vectorizer_ckpt']
     path_to_model_ckpt = config['model']['path_to_model_ckpt']
     path_to_submission = config['results']['path_to_submission']
-    
+
     predictor = Predictor()
     predictor.predict(path_to_test_data, path_to_model_ckpt, path_to_vectorizer_ckpt, path_to_submission)
