@@ -2,7 +2,7 @@ import pickle
 from utils import load_ckpt
 from preprocess import Preprocessor
 import pandas as pd
-
+import configparser
 
 class Predictor:
 
@@ -23,9 +23,13 @@ class Predictor:
         submission.to_csv(path_to_submission, index=False)
 
 if __name__ == "__main__":
-    path_to_test_data = '/Users/modzyuba1/ITMO/big-data-lab1/data/bbc_news_test.csv'
-    path_to_vectorizer_ckpt = '/Users/modzyuba1/ITMO/big-data-lab1/ckpts/tfidf_vectorizer.pkl'
-    path_to_model_ckpt = '/Users/modzyuba1/ITMO/big-data-lab1/ckpts/tfidf_svc_model.pkl'
-    path_to_submission = '/Users/modzyuba1/ITMO/big-data-lab1/data/submission.csv'
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    path_to_test_data = config['data']['path_to_test_data']
+    path_to_vectorizer_ckpt = config['vectorizer']['path_to_vectorizer_ckpt']
+    path_to_model_ckpt = config['model']['path_to_model_ckpt']
+    path_to_submission = config['results']['path_to_submission']
+    
     predictor = Predictor()
     predictor.predict(path_to_test_data, path_to_model_ckpt, path_to_vectorizer_ckpt, path_to_submission)

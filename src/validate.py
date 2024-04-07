@@ -3,6 +3,7 @@ import pickle
 from utils import load_ckpt
 from preprocess import Preprocessor
 import pandas as pd
+import configparser
 
 metrics = {
     "f1_macro" : (f1_score, "macro"),
@@ -40,9 +41,12 @@ class Validator:
         metrics_df.to_csv(path_to_metrics)
 
 if __name__ == "__main__":
-    path_to_val_data = '/Users/modzyuba1/ITMO/big-data-lab1/data/bbc_news_val.csv'
-    path_to_vectorizer_ckpt = '/Users/modzyuba1/ITMO/big-data-lab1/ckpts/tfidf_vectorizer.pkl'
-    path_to_model_ckpt = '/Users/modzyuba1/ITMO/big-data-lab1/ckpts/tfidf_svc_model.pkl'
-    path_to_metrics = '/Users/modzyuba1/ITMO/big-data-lab1/metrics/metrics.csv'
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    path_to_val_data = config['data']['path_to_val_data']
+    path_to_vectorizer_ckpt = config['vectorizer']['path_to_vectorizer_ckpt']
+    path_to_model_ckpt = config['model']['path_to_model_ckpt']
+    path_to_metrics = config['results']['path_to_metrics']
     validator = Validator()
     validator.validate(path_to_val_data, path_to_model_ckpt, path_to_vectorizer_ckpt, path_to_metrics)
