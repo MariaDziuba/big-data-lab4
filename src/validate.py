@@ -38,7 +38,7 @@ class Validator:
                 values_list.append(v[0](y_val, predicted, average=v[1]))
 
         metrics_df = pd.DataFrame({"metric": metrics_list, "value": values_list})
-        metrics_df.to_csv(path_to_metrics)
+        metrics_df.to_csv(path_to_metrics, index=False)
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
