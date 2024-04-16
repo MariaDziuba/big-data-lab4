@@ -162,3 +162,4 @@ cython_debug/
 # MacOS files
 .DS_Store
 ._*
+/tmp/
