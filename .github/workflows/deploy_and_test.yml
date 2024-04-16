@@ -23,4 +23,4 @@ jobs:
       run: docker pull mariadziuba/lab1_bd:latest
 
     - name: Execute Tests
-      run: docker run --rm mariadziuba/lab1_bd python -m pytest src/unit_tests/ bash 
+      run: docker run --rm mariadziuba/lab1_bd python -m pytest src/unit_tests/ 
