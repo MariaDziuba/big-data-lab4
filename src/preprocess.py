@@ -12,13 +12,13 @@ import pandas as pd
 
 class Preprocessor:
 
-    stop_words = stopwords.words('english')
     article_ids: List
 
     def __init__(self):
         nltk.download('wordnet')
         nltk.download('punkt')
         nltk.download('stopwords')
+        self.stop_words = stopwords.words('english')
 
     def clean_text(self, doc):
         text = "".join([char for char in doc if char not in string.punctuation and not char.isdigit()])
