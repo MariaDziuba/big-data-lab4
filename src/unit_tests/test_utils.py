@@ -1,6 +1,9 @@
 import os
 import pandas as pd
+import pytest
 
+
+@pytest.fixture(scope="module")
 def get_tmp_test_data(tmp_path: str) -> str:
     if not os.path.exists(tmp_path):
         train_df = pd.DataFrame({
@@ -14,6 +17,7 @@ def get_tmp_test_data(tmp_path: str) -> str:
         return pd.read_csv(tmp_path)
 
 
+@pytest.fixture(scope="module")
 def get_tmp_val_data(tmp_path: str) -> str:
     if not os.path.exists(tmp_path):
         val_df = pd.DataFrame({
@@ -46,6 +50,8 @@ def get_tmp_val_data(tmp_path: str) -> str:
     else:
         return pd.read_csv(tmp_path)
     
+
+@pytest.fixture(scope="module")    
 def tmp_dir_from_path(tmp_path: str):
     tmp_dir = os.path.dirname(tmp_path)
     if not os.path.exists(tmp_dir):
