@@ -1,6 +1,9 @@
 name: Run Tests
 
 on:
+  push:
+    branches:
+      - docker
   workflow_dispatch:
 
 jobs:
