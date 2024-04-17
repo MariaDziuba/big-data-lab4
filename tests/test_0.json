@@ -1,0 +1,13 @@
+{
+    "X": [
+        {
+            "ArticleId": 1,
+            "Text": "Business is good!"
+        }
+    ],
+    "y": [
+        {
+            "Category": "business"
+        }
+    ]
+}
