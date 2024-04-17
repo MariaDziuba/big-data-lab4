@@ -26,4 +26,4 @@ jobs:
       run: docker run --rm mariadziuba/lab1_bd python -m pytest src/unit_tests/ 
 
     - name: Execute Functional Tests
-      run: docker run --rm mariadziuba/lab1_bd python -m tests/app_test.py 
+      run: docker run --rm mariadziuba/lab1_bd python -m tests/
