@@ -10,19 +10,18 @@ from sklearn.dummy import DummyClassifier
 from preprocess import Preprocessor
 from utils import load_ckpt, save_ckpt
 from validate import Validator
-from test_utils import tmp_dir_from_path, get_tmp_val_data
 
-def test_validator(
-    path_to_train_data: str,
-    path_to_tmp_val_data: str,
-    path_to_vectorizer_ckpt: str,
-    path_to_dummy_model_ckpt: str,
-    path_to_tmp_metrics: str
-):
+def test_validator():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    path_to_train_data = os.path.join(cur_dir.parent.parent.parent, config['data']['path_to_train_data'])
+    path_to_tmp_val_data = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_tmp_val_data'])
+    path_to_vectorizer_ckpt = os.path.join(cur_dir.parent.parent.parent, config['vectorizer']['path_to_vectorizer_ckpt'])
+    path_to_dummy_model_ckpt = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_dummy_model_ckpt'])
+    path_to_tmp_metrics = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_tmp_metrics'])
+
     dummy = DummyClassifier(strategy="most_frequent")
     preprocessor = Preprocessor()
-    tmp_dir_from_path(path_to_tmp_val_data)
-    get_tmp_val_data(path_to_tmp_val_data)
     X_train, y_train = preprocessor.load_and_preprocess_data(path_to_train_data, isTest=False)
     vectorizer = load_ckpt(path_to_vectorizer_ckpt)
     train_features = vectorizer.fit_transform(X_train)
@@ -36,13 +35,3 @@ def test_validator(
     assert tmp_metrics.iloc[1]["metric"] == "accuracy" and round(tmp_metrics.iloc[1]["value"], 2) == 0.11
     assert tmp_metrics.iloc[2]["metric"] == "precision_macro" and round(tmp_metrics.iloc[2]["value"], 2) == 0.02
     assert tmp_metrics.iloc[3]["metric"] == "recall_macro" and round(tmp_metrics.iloc[3]["value"], 2) == 0.2
-
-if __name__ == "__main__":
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    path_to_train_data = os.path.join(cur_dir.parent.parent.parent, config['data']['path_to_train_data'])
-    path_to_tmp_val_data = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_tmp_val_data'])
-    path_to_vectorizer_ckpt = os.path.join(cur_dir.parent.parent.parent, config['vectorizer']['path_to_vectorizer_ckpt'])
-    path_to_dummy_model_ckpt = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_dummy_model_ckpt'])
-    path_to_tmp_metrics = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_tmp_metrics'])
-    test_validator(path_to_train_data, path_to_tmp_val_data, path_to_vectorizer_ckpt,path_to_dummy_model_ckpt, path_to_tmp_metrics)
