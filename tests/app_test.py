@@ -26,16 +26,11 @@ def test_api():
     y = test_json["y"]
     del test_json['y']
 
-    # print(test_json)
-    # print(y)
-
     response = client.post(
        f"/predict/",
        json=test_json
     )
-    # print(response.status_code)
-    #print(response.json()["Category"]["0"])
-    #print(y[0]["Category"])
+
     assert response.status_code == 200
     assert response.json()["Category"]["0"] == y[0]["Category"]
 
