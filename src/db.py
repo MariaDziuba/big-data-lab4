@@ -4,6 +4,7 @@ import os
 
 import clickhouse_connect
 import pandas as pd
+from typing import Dict
 
 
 class Database():
@@ -17,13 +18,17 @@ class Database():
     def create_database(self, database_name="lab2_bd"):
         self.client.command(f"""CREATE DATABASE IF NOT EXISTS {database_name};""")
 
-    def create_table(self, table_name="test"):
+    def create_table(self, table_name: str, columns: Dict):
+        cols = ""
+        for k, v in columns.items():
+            cols += f"`{k}` {v}, "
+        id_column = list(filter(lambda i: 'Id' in i[0], columns.items()))[0][0]
         self.client.command(f"""
             CREATE TABLE IF NOT EXISTS {table_name} 
             (
-                `name1` UInt32
+                {cols}
             ) ENGINE = MergeTree
-            ORDER BY name1;
+            ORDER BY {id_column};
         """)
 
     def insert_df(self, tablename: str, df: pd.DataFrame):
@@ -41,9 +46,13 @@ class Database():
 if __name__ == '__main__':
     db = Database()
     db.create_database("lab2_bd")
-    db.create_table("test")
-    db.insert_df("test", pd.DataFrame({"name1": [1]}))
-    print(db.read_table("test"))
-    db.drop_table("test")
+    db.create_table("test1", {'nameId': 'UInt32'})
+    db.create_table("test2", {'nameId': 'UInt32', 'name3': 'UInt32'})
+    db.insert_df("test1", pd.DataFrame({"nameId": [1]}))
+    db.insert_df("test2", pd.DataFrame({"nameId": [1], "name3": [1]}))
+    print(db.read_table("test1"))
+    print(db.read_table("test2"))
+    db.drop_table("test1")
+    db.drop_table("test2")
     db.drop_database("lab2_bd")
 
