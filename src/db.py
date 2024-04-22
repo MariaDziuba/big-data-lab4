@@ -43,6 +43,9 @@ class Database():
     def drop_table(self, table_name: str):
         self.client.command(f'DROP TABLE IF EXISTS {table_name}')
 
+    def table_exists(self, table_name: str):
+        return self.client.query_df(f'EXISTS {table_name}')
+
 if __name__ == '__main__':
     db = Database()
     db.create_database("lab2_bd")

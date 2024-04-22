@@ -8,7 +8,9 @@ cur_dir = path.Path(__file__).absolute()
 sys.path.append(cur_dir.parent.parent)
 tmp_dir = os.path.join(cur_dir.parent.parent.parent, "tmp")
 import configparser
+from src.db import Database
 
+db = Database()
 
 @pytest.fixture(scope="session", autouse=True)
 def run_around_tests():
@@ -18,15 +20,19 @@ def run_around_tests():
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    path_to_tmp_val_data = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_tmp_val_data'])
-    path_to_tmp_test_data = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_tmp_test_data'])
+    path_to_train_data = os.path.join(cur_dir.parent.parent.parent, config['data']['path_to_train_data'])
+
+    # path_to_tmp_val_data = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_tmp_val_data'])
+    # path_to_tmp_test_data = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_tmp_test_data'])
 
     test_df = pd.DataFrame({
         "ArticleId": [1, 2],
         "Text": ["Business is good!", "Football is a popular sport"],
         "Category": ["business", "sport"]
     })
-    test_df.to_csv(path_to_tmp_test_data, index=False)
+    # test_df.to_csv(path_to_tmp_test_data, index=False)
+    db.create_table('tmp_test', {'ArticleId': 'UInt32', 'Text': 'String', 'Category': 'String'})
+    db.insert_df("tmp_test", test_df)
 
     val_df = pd.DataFrame({
         "ArticleId": [1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -53,7 +59,22 @@ def run_around_tests():
             "sport",
         ]
     })
-    val_df.to_csv(path_to_tmp_val_data, index=False)
+    db.create_table('tmp_val', {'ArticleId': 'UInt32', 'Text': 'String', 'Category': 'String'})
+    db.insert_df("tmp_val", val_df)
+
+    train_df = pd.read_csv(path_to_train_data)
+    db.create_table('train', {'ArticleId': 'UInt32', 'Text': 'String', 'Category': 'String'})
+    db.insert_df("train", train_df)
+
+    db.create_table('tmp_submission', {'ArticleId': 'UInt32', 'Category': 'String'})
+    db.create_table('tmp_metrics', {'Id': 'UInt32', 'Metric': 'String', 'Value': 'Float64'})
+    # val_df.to_csv(path_to_tmp_val_data, index=False)
     yield
     # after tests:
-    shutil.rmtree(tmp_dir)
+    db.drop_table("tmp_test")
+    db.drop_table("tmp_val")
+    db.drop_table("train")
+    db.drop_table("tmp_submission")
+    db.drop_table("tmp_metrics")
+    db.drop_database("lab2_bd")
+    # shutil.rmtree(tmp_dir)

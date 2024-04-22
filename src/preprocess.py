@@ -9,6 +9,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 import string
 import pandas as pd
+from src.db import Database
 
 class Preprocessor:
 
@@ -34,12 +35,11 @@ class Preprocessor:
         train_data['Clean_text'] = train_data['Text'].apply(lambda x: self.clean_text(x))
         return train_data
     
-    def load_data(self, path_to_train_data: str) -> pd.DataFrame:
-        train_data = pd.read_csv(path_to_train_data)
-        return train_data
+    def load_data(self, db: Database, data_table: str) -> pd.DataFrame:
+        return db.read_table(data_table)
         
-    def load_and_preprocess_data(self, path_to_data: str, isTest: bool)-> Tuple[List, List]:
-        data = self.load_data(path_to_data)
+    def load_and_preprocess_data(self, db: Database, data_table: str, isTest: bool)-> Tuple[List, List]:
+        data = self.load_data(db, data_table)
         data = self.preprocess_data(data)
         self.article_ids = data['ArticleId'].to_list()
         X = data['Clean_text'].tolist()
