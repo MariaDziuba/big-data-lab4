@@ -38,3 +38,6 @@ jobs:
 
     - name: Execute Functional Tests
       run: docker-compose exec -T app python -m pytest tests/
+
+    - name: Get Docker Compose Logs
+      run: docker-compose logs
