@@ -25,8 +25,16 @@ jobs:
     - name: Pull Docker image
       run: docker pull mariadziuba/lab1_bd:latest
 
+    - name: Create .env file
+      run: |
+        echo "CLICKHOUSE_LOGIN=${{ secrets.CLICKHOUSE_LOGIN }}" >> .env
+        echo "CLICKHOUSE_PWD=${{ secrets.CLICKHOUSE_PWD }}" >> .env
+
+    - name: Start services
+      run: docker-compose up -d
+
     - name: Execute Unit Tests
-      run: docker run --rm mariadziuba/lab1_bd python -m pytest src/unit_tests/ 
+      run: docker-compose exec -T app python -m pytest src/unit_tests/ 
 
     - name: Execute Functional Tests
-      run: docker run --rm mariadziuba/lab1_bd python -m pytest tests/
+      run: docker-compose exec -T app python -m pytest tests/

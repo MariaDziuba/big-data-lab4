@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+   web:
+      image: mariadziuba/lab1_bd:latest
+      ports:
+        - 8001:8001
+      env_file:
+        - .env
+      depends_on:
+        - clickhouse
+       
+   clickhouse:
+      image: clickhouse/clickhouse-server
+      ports:
+        - 8123:8123
+      environment:
+        - CLICKHOUSE_USER=${CLICKHOUSE_LOGIN}
+        - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PWD}
+      volumes:
+        - ${PWD}/fs/volumes/clickhouse/etc/clickhouse-server/config.d/config.xml:/etc/clickhouse-server/config.d/config.xml
+        - ${PWD}/fs/volumes/clickhouse/etc/clickhouse-server/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
+        - ${PWD}/fs/volumes/clickhouse/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
