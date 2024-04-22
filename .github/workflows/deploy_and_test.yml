@@ -34,10 +34,10 @@ jobs:
       run: docker-compose up -d
 
     - name: Execute Unit Tests
-      run: docker-compose exec -T app python -m pytest src/unit_tests/ 
+      run: docker-compose exec -T web python -m pytest src/unit_tests/ 
 
     - name: Execute Functional Tests
-      run: docker-compose exec -T app python -m pytest tests/
+      run: docker-compose exec -T web python -m pytest tests/
 
     - name: Get Docker Compose Logs
       run: docker-compose logs
