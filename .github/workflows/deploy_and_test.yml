@@ -30,6 +30,7 @@ jobs:
         echo "CLICKHOUSE_LOGIN=${{ secrets.CLICKHOUSE_LOGIN }}" >> .env
         echo "CLICKHOUSE_PWD=${{ secrets.CLICKHOUSE_PWD }}" >> .env
         echo "CLICKHOUSE_PORT=${{ secrets.CLICKHOUSE_PORT }}" >> .env
+        echo "CLICKHOUSE_HOST=${{ secrets.CLICKHOUSE_HOST }}" >> .env
 
     - name: Start services
       run: docker-compose up -d
