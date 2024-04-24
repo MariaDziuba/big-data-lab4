@@ -7,8 +7,10 @@ cur_dir = path.Path(__file__).absolute()
 sys.path.append(cur_dir.parent.parent)
 import json
 import pandas as pd
+from src.app.main import db
 
 from src.app.main import app
+
 
 client = TestClient(app)
 

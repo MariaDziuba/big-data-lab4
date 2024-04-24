@@ -17,6 +17,8 @@ def run_around_tests():
     # before tests:
     os.makedirs(tmp_dir, mode=0o777, exist_ok=True)
 
+    db.create_database("lab2_bd")
+
     config = configparser.ConfigParser()
     config.read('config.ini')
 
