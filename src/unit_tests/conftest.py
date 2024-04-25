@@ -9,8 +9,16 @@ sys.path.append(cur_dir.parent.parent)
 tmp_dir = os.path.join(cur_dir.parent.parent.parent, "tmp")
 import configparser
 from src.db import Database
+from src.vault import AnsibleVault
 
-db = Database()
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+vault_pwd_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault_pwd'])
+vault_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault'])
+ansible_vault = AnsibleVault(vault_pwd_file, vault_file)
+
+db = Database(ansible_vault)
 
 @pytest.fixture(scope="session", autouse=True)
 def run_around_tests():
@@ -19,8 +27,6 @@ def run_around_tests():
 
     db.create_database("lab2_bd")
 
-    config = configparser.ConfigParser()
-    config.read('config.ini')
 
     path_to_train_data = os.path.join(cur_dir.parent.parent.parent, config['data']['path_to_train_data'])
 

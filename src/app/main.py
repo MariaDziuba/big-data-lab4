@@ -14,8 +14,16 @@ from src.predict import Predictor
 app = FastAPI()
 
 from src.db import Database
+from src.vault import AnsibleVault
 
-db = Database()
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+vault_pwd_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault_pwd'])
+vault_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault'])
+ansible_vault = AnsibleVault(vault_pwd_file, vault_file)
+
+db = Database(ansible_vault)
 db.create_table('tmp_test', {'ArticleId': 'UInt32', 'Text': 'String', 'Category': 'String'})
 db.create_table('tmp_submission', {'ArticleId': 'UInt32', 'Category': 'String'})
 

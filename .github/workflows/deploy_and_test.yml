@@ -23,14 +23,13 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Pull Docker image
-      run: docker pull mariadziuba/lab2_bd:latest
+      run: docker pull mariadziuba/lab3_bd:latest
 
     - name: Create .env file
       run: |
         echo "CLICKHOUSE_LOGIN=${{ secrets.CLICKHOUSE_LOGIN }}" >> .env
         echo "CLICKHOUSE_PWD=${{ secrets.CLICKHOUSE_PWD }}" >> .env
-        echo "CLICKHOUSE_PORT=${{ secrets.CLICKHOUSE_PORT }}" >> .env
-        echo "CLICKHOUSE_HOST=${{ secrets.CLICKHOUSE_HOST }}" >> .env
+        echo "${{secrets.ANSIBLE_VAULT_PWD}}" >> vault_pwd.txt
 
     - name: Start services
       run: docker-compose up -d
