@@ -23,7 +23,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Pull Docker image
-      run: docker pull mariadziuba/lab2_bd:latest
+      run: docker pull mariadziuba/lab3_bd:latest
 
     - name: Create .env file
       run: |
