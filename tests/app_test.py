@@ -33,6 +33,14 @@ def test_api():
        json=test_json
     )
 
+    print('response')
+    print(response.json())
+    assert response.json()["MessageId"] == 0
+    
+    response = client.get(
+       f"/predict/0",
+    )
+
     assert response.status_code == 200
     assert response.json()["Category"]["0"] == y[0]["Category"]
 

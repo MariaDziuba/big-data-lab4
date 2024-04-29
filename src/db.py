@@ -47,6 +47,9 @@ class Database():
 
     def read_table(self, tablename: str) -> pd.DataFrame:
         return self.client.query_df(f'SELECT * FROM {tablename}')
+    
+    def select_by_condition(self, tablename: str, condition: str) -> pd.DataFrame:
+        return self.client.query_df(f'SELECT * FROM {tablename} WHERE {condition}')
 
     def drop_database(self, database_name: str):
         self.client.command(f'DROP DATABASE IF EXISTS {database_name}')

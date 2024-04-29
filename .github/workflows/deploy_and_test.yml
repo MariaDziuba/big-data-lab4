@@ -30,8 +30,12 @@ jobs:
         echo "CLICKHOUSE_LOGIN=${{ secrets.CLICKHOUSE_LOGIN }}" >> .env
         echo "CLICKHOUSE_PWD=${{ secrets.CLICKHOUSE_PWD }}" >> .env
         echo "${{secrets.ANSIBLE_VAULT_PWD}}" >> vault_pwd.txt
+        echo "PARTITIONS_COUNT=${{ secrets.PARTITIONS_COUNT }}" >> .env
+        echo "TOPIC_NAME=${{ secrets.TOPIC_NAME }}" >> .env
 
-
+    - name: Wait for services to be ready
+      run: sleep 15
+      
     - name: Start services
       run: docker-compose up -d
 

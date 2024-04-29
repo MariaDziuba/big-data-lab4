@@ -1,7 +1,7 @@
 version: '3.8'
 services:
-   web:
-      image: mariadziuba/lab1_bd:latest
+    web:
+      image: mariadziuba/lab4_bd:latest
       ports:
         - 8001:8001
       env_file:
@@ -9,7 +9,7 @@ services:
       depends_on:
         - clickhouse
        
-   clickhouse:
+    clickhouse:
       image: clickhouse/clickhouse-server
       ports:
         - 9000:9000
@@ -18,7 +18,25 @@ services:
       environment:
         - CLICKHOUSE_USER=${CLICKHOUSE_LOGIN}
         - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PWD}
-      volumes:
-        - ${PWD}/fs/volumes/clickhouse/etc/clickhouse-server/config.d/config.xml:/etc/clickhouse-server/config.d/config.xml
-        - ${PWD}/fs/volumes/clickhouse/etc/clickhouse-server/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
-        - ${PWD}/fs/volumes/clickhouse/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+    kafka:
+      image: bitnami/kafka:latest
+      ports:
+        - "9092:9092"
+      environment:
+        - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+        - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+        - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,EXTERNAL://:9094
+        - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+        - KAFKA_TOPIC_NAME=${TOPIC_NAME}
+        - KAFKA_TOPIC_PARTITIONS=${PARTITIONS_COUNT}
+      depends_on:
+        - zookeeper
+
+    zookeeper:
+      image: bitnami/zookeeper:3.9
+      ports:
+        - "2181:2181"
+      environment:
+        - ALLOW_ANONYMOUS_LOGIN=yes
+      
