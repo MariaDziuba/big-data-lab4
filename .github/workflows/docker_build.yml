@@ -28,4 +28,4 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: mariadziuba/lab3_bd:latest
+        tags: mariadziuba/lab4_bd:latest
