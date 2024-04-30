@@ -39,4 +39,13 @@ services:
         - "2181:2181"
       environment:
         - ALLOW_ANONYMOUS_LOGIN=yes
+
+    kafka_consumer:
+      build: . 
+      command: ["python", "src/consumer.py"]
+      restart: unless-stopped
+      depends_on:
+        - kafka
+        - clickhouse
+        - web
       

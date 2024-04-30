@@ -97,6 +97,7 @@ pygtrie==2.5.0
 pyparsing==3.1.2
 pytest==8.1.1
 python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
 pytz==2024.1
 PyYAML==6.0.1
 regex==2023.12.25

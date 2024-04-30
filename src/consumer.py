@@ -1,7 +1,7 @@
 import kafka
 
-from src.db import Database
-from src.vault import AnsibleVault
+from db import Database
+from vault import AnsibleVault
 import configparser
 import os
 import path
@@ -11,6 +11,9 @@ sys.path.append(cur_dir.parent.parent)
 import pandas as pd
 from predict import Predictor
 import json
+from dotenv import load_dotenv
+load_dotenv()
+
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -36,10 +39,7 @@ class Consumer:
             auto_offset_reset="earliest",
             value_deserializer=lambda v: json.dumps(v).encode('utf-8'),
         )
-
         self.db = Database(vault)
-        self.db.create_table('tmp_queries', {'MessageId': 'UInt32', 'ArticleId': 'UInt32', 'Text': 'String', 'Category': 'String'})
-        self.db.create_table('tmp_predictions', {'MessageId': 'UInt32', 'ArticleId': 'UInt32', 'Category': 'String'})
         
 
     def run(self, X: list, msg_id: int):
@@ -51,8 +51,6 @@ class Consumer:
 
 
     def close(self):
-        self.db.drop_table("tmp_queries")
-        self.db.drop_table("tmp_predictions")
         self.connection.close()
         self.consumer.close()
         

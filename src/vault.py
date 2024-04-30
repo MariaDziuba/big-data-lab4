@@ -11,8 +11,9 @@ class AnsibleVault:
     secrets: Dict = None
 
     def __init__(self, pwd_file: str, vault_file: str):
-        with open(pwd_file) as f:
-            self.vault = Vault(f.read())
+        self.vault = Vault(os.getenv('ANSIBLE_VAULT_PWD'))
+        # with open(pwd_file) as f:
+            # self.vault = Vault(f.read())
         self.vault_file = vault_file     
 
         with open(self.vault_file) as f:
