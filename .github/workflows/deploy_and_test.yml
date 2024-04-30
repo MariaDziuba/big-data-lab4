@@ -35,15 +35,15 @@ jobs:
 
     - name: Wait for services to be ready
       run: sleep 15
-      
+
     - name: Start services
       run: docker-compose up -d
 
     - name: Execute Unit Tests
-      run: docker-compose exec -T web python -m pytest src/unit_tests/ 
+      run: docker-compose exec -T web python -m pytest --tb=long src/unit_tests/ 
 
     - name: Execute Functional Tests
-      run: docker-compose exec -T web python -m pytest tests/
+      run: docker-compose exec -T web python -m pytest --tb=long tests/
 
     - name: Get Docker Compose Logs
       run: docker-compose logs
