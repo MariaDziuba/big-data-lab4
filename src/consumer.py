@@ -20,10 +20,9 @@ config.read('config.ini')
 
 path_to_vectorizer_ckpt = os.path.join(cur_dir.parent.parent, config['vectorizer']['path_to_vectorizer_ckpt'])
 path_to_model_ckpt = os.path.join(cur_dir.parent.parent, config['model']['path_to_model_ckpt'])
-vault_pwd_file = os.path.join(cur_dir.parent.parent, config['secrets']['vault_pwd'])
 vault_file = os.path.join(cur_dir.parent.parent, config['secrets']['vault'])
 
-ansible_vault = AnsibleVault(vault_pwd_file, vault_file)
+ansible_vault = AnsibleVault(vault_file)
 
 class Consumer:
     def __init__(

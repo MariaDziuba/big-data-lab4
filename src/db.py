@@ -75,9 +75,8 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    vault_pwd_file = os.path.join(cur_dir.parent.parent, config['secrets']['vault_pwd'])
     vault_file = os.path.join(cur_dir.parent.parent, config['secrets']['vault'])
-    ansible_vault = AnsibleVault(vault_pwd_file, vault_file)
+    ansible_vault = AnsibleVault(vault_file)
 
     db = Database(ansible_vault)
 
