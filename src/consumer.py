@@ -18,10 +18,10 @@ load_dotenv()
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-path_to_vectorizer_ckpt = os.path.join(cur_dir.parent.parent.parent, config['vectorizer']['path_to_vectorizer_ckpt'])
-path_to_model_ckpt = os.path.join(cur_dir.parent.parent.parent, config['model']['path_to_model_ckpt'])
-vault_pwd_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault_pwd'])
-vault_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault'])
+path_to_vectorizer_ckpt = os.path.join(cur_dir.parent.parent, config['vectorizer']['path_to_vectorizer_ckpt'])
+path_to_model_ckpt = os.path.join(cur_dir.parent.parent, config['model']['path_to_model_ckpt'])
+vault_pwd_file = os.path.join(cur_dir.parent.parent, config['secrets']['vault_pwd'])
+vault_file = os.path.join(cur_dir.parent.parent, config['secrets']['vault'])
 
 ansible_vault = AnsibleVault(vault_pwd_file, vault_file)
 
@@ -37,7 +37,7 @@ class Consumer:
             bootstrap_servers=kafka_server,
             enable_auto_commit=True,
             auto_offset_reset="earliest",
-            value_deserializer=lambda v: json.dumps(v).encode('utf-8'),
+            value_deserializer=lambda x: json.loads(x.decode('utf-8')),
         )
         self.db = Database(vault)
         
@@ -46,9 +46,18 @@ class Consumer:
         df = pd.DataFrame(X)
         self.db.insert_df("tmp_queries", df)
 
+        # print(self.db.table_exists("tmp_queries")['result'].iloc[0])
+        # print(self.db.read_table("tmp_queries"))
         predictor = Predictor()
-        predictor.predict(self.db, "tmp_predictions", "tmp_queries", path_to_model_ckpt, path_to_vectorizer_ckpt, {'MessageId': msg_id})     
+        predictor.predict(self.db, "tmp_predictions", "tmp_queries", path_to_model_ckpt, path_to_vectorizer_ckpt, {'MessageId': msg_id})
+        # print(self.db.table_exists("tmp_predictions")['result'].iloc[0])
+        # print(self.db.read_table("tmp_predictions"))
 
+
+    def run_all_msg(self):
+        while True:
+            for msg in self.consumer:
+                self.run(msg.value['X'], msg.value['msg_id'])
 
     def close(self):
         self.connection.close()
@@ -57,10 +66,8 @@ class Consumer:
         
 def main():
     consumer = Consumer(ansible_vault)
-    
-    for msg in consumer:
-        consumer.run(msg.value['X'], msg.value['msg_id'])
+    consumer.run_all_msg()
 
-    consumer.close()
+    # consumer.close()
 if __name__ == "__main__":
     main()

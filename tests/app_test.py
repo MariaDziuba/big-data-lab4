@@ -51,19 +51,26 @@ def test_api():
 
     print('response')
     print(response.json())
-    assert response.json()['msg_id'] == 0
+    # assert response.json()['msg_id'] == 0
+
+    msg_id = response.json()['msg_id']
     
     response = client.get(
-       f"/predict/0",
+       f"/predict/{msg_id}",
     )
-    
-    print('response 2')
-    print(response.json())
+
+    # print('msg_id from test', msg_id)
+
+    # print('tmp_predictions from app_test.py', db.read_table("tmp_predictions"))
+    # result = db.select_by_condition("tmp_predictions", f"MessageId = {msg_id}")
+    # print(result)
+    # print(result.to_dict())
+
+    # print('response 2')
+    # print(response.json())
 
     assert response.status_code == 200
     assert response.json()["Category"]["0"] == y[0]["Category"]
     db.drop_table("tmp_queries")
     db.drop_table("tmp_predictions")
     client.__exit__(None, None, None)
-
-test_api()

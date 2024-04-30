@@ -30,8 +30,9 @@ class InputData(BaseModel):
 @app.get("/predict/{msg_id}")
 async def get_prediction_by_id(msg_id: int):
     try:
-        print(db.read_table("tmp_predictions"))
-        result = db.select_by_condition("tmp_predictions", f"MessageId == {msg_id}")
+        # print('tmp_predictions from app.py', db.read_table("tmp_predictions"))
+        result = db.select_by_condition("tmp_predictions", f"MessageId = {msg_id}")
+        # print('result from app.py', result)
         return result.to_dict()
     except Exception as e:
         print(e)
