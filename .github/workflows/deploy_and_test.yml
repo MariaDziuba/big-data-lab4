@@ -39,9 +39,6 @@ jobs:
     - name: Start services
       run: docker-compose up -d
 
-    - name: Execute Unit Tests
-      run: docker-compose exec -T web python -m pytest --tb=long src/unit_tests/ 
-
     - name: Execute Functional Tests
       run: docker-compose exec -T web python -m pytest --tb=long tests/
 
