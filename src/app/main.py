@@ -1,5 +1,3 @@
-import numpy as np
-import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
@@ -9,7 +7,7 @@ import path
 import sys
 cur_dir = path.Path(__file__).absolute()
 sys.path.append(cur_dir.parent.parent)
-from src.predict import Predictor
+from src.producer import Producer
 
 app = FastAPI()
 
@@ -19,46 +17,36 @@ from src.vault import AnsibleVault
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-vault_pwd_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault_pwd'])
 vault_file = os.path.join(cur_dir.parent.parent.parent, config['secrets']['vault'])
-ansible_vault = AnsibleVault(vault_pwd_file, vault_file)
+ansible_vault = AnsibleVault(vault_file)
 
+producer = Producer(ansible_vault)
 db = Database(ansible_vault)
-db.create_table('tmp_test', {'ArticleId': 'UInt32', 'Text': 'String', 'Category': 'String'})
-db.create_table('tmp_submission', {'ArticleId': 'UInt32', 'Category': 'String'})
-
-config = configparser.ConfigParser()
-config.read('config.ini')
-
-# path_to_test_data = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_app_test_data'])
-path_to_vectorizer_ckpt = os.path.join(cur_dir.parent.parent.parent, config['vectorizer']['path_to_vectorizer_ckpt'])
-path_to_model_ckpt = os.path.join(cur_dir.parent.parent.parent, config['model']['path_to_model_ckpt'])
-# path_to_submission = os.path.join(cur_dir.parent.parent.parent, config['tests']['path_to_app_submission'])
-
-model = load_ckpt(path_to_model_ckpt)
-vectorizer = load_ckpt(path_to_vectorizer_ckpt)
-
 
 class InputData(BaseModel):
     X: list
 
+@app.get("/predict/{msg_id}")
+async def get_prediction_by_id(msg_id: int):
+    try:
+        # print('tmp_predictions from app.py', db.read_table("tmp_predictions"))
+        result = db.select_by_condition("tmp_predictions", f"MessageId = {msg_id}")
+        # print('result from app.py', result)
+        return result.to_dict()
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/predict/")
 async def predict(input_data: InputData):
     try:
-        df = pd.DataFrame(input_data.X)
-        db.insert_df("tmp_test", df)
-
-        # df.to_csv(path_to_test_data)
-        predictor = Predictor()
-        predictor.predict(db, "tmp_submission", "tmp_test", path_to_model_ckpt, path_to_vectorizer_ckpt)
-        
-        response = db.read_table("tmp_submission")
-        return response.to_dict()
-
+        msg_id = producer.run(input_data.X)
+        return {'msg_id': msg_id}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        producer.close()
     
 
 

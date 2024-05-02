@@ -47,6 +47,19 @@ class Database():
 
     def read_table(self, tablename: str) -> pd.DataFrame:
         return self.client.query_df(f'SELECT * FROM {tablename}')
+    
+    def select_by_condition(self, tablename: str, condition: str) -> pd.DataFrame:
+        # print(condition)
+        # print(f"""
+            # SELECT * 
+            # FROM {tablename}
+            # WHERE {condition};
+        # """)
+        return self.client.query_df(f"""
+            SELECT * 
+            FROM {tablename}
+            WHERE {condition};
+        """)
 
     def drop_database(self, database_name: str):
         self.client.command(f'DROP DATABASE IF EXISTS {database_name}')
@@ -62,9 +75,8 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    vault_pwd_file = os.path.join(cur_dir.parent.parent, config['secrets']['vault_pwd'])
     vault_file = os.path.join(cur_dir.parent.parent, config['secrets']['vault'])
-    ansible_vault = AnsibleVault(vault_pwd_file, vault_file)
+    ansible_vault = AnsibleVault(vault_file)
 
     db = Database(ansible_vault)
 

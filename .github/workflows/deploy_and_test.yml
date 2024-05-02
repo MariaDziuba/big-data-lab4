@@ -23,22 +23,24 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Pull Docker image
-      run: docker pull mariadziuba/lab3_bd:latest
+      run: docker pull mariadziuba/lab4_bd:latest
 
     - name: Create .env file
       run: |
         echo "CLICKHOUSE_LOGIN=${{ secrets.CLICKHOUSE_LOGIN }}" >> .env
         echo "CLICKHOUSE_PWD=${{ secrets.CLICKHOUSE_PWD }}" >> .env
-        echo "${{secrets.ANSIBLE_VAULT_PWD}}" >> vault_pwd.txt
+        echo "ANSIBLE_VAULT_PWD=${{ secrets.ANSIBLE_VAULT_PWD }}" >> .env
+        echo "PARTITIONS_COUNT=${{ secrets.PARTITIONS_COUNT }}" >> .env
+        echo "TOPIC_NAME=${{ secrets.TOPIC_NAME }}" >> .env
+
+    - name: Wait for services to be ready
+      run: sleep 15
 
     - name: Start services
       run: docker-compose up -d
 
-    - name: Execute Unit Tests
-      run: docker-compose exec -T web python -m pytest src/unit_tests/ 
-
     - name: Execute Functional Tests
-      run: docker-compose exec -T web python -m pytest tests/
+      run: docker-compose exec -T web python -m pytest --tb=long tests/
 
     - name: Get Docker Compose Logs
       run: docker-compose logs
