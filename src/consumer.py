@@ -24,6 +24,13 @@ vault_file = os.path.join(cur_dir.parent.parent, config['secrets']['vault'])
 
 ansible_vault = AnsibleVault(vault_file)
 
+class KafkaConsumerError(Exception):
+    def __init__(self, comment):
+        self.comment = comment
+    
+    def __str__(self):
+        return self.comment
+
 class Consumer:
     def __init__(
         self,
@@ -56,7 +63,16 @@ class Consumer:
     def run_all_msg(self):
         while True:
             for msg in self.consumer:
-                self.run(msg.value['X'], msg.value['msg_id'])
+                try:
+                    X = msg.value['X']
+                except KeyError:
+                    raise KafkaConsumerError(f"Data for consumer was not provided: 'X' field in message is empty")
+                try: 
+                    msg_id = msg.value['msg_id']
+                except KeyError:
+                    raise KafkaConsumerError(f"Empty message id: 'msg_id' field in message is empty")
+                self.run(X, msg_id)
+
 
     def close(self):
         self.connection.close()
