@@ -55,11 +55,7 @@ class Database():
             # FROM {tablename}
             # WHERE {condition};
         # """)
-        return self.client.query_df(f"""
-            SELECT * 
-            FROM {tablename}
-            WHERE {condition};
-        """)
+        return self.client.query_df(f"""SELECT * FROM {tablename} WHERE {condition};""")
 
     def drop_database(self, database_name: str):
         self.client.command(f'DROP DATABASE IF EXISTS {database_name}')
